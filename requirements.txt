@@ -2,8 +2,6 @@ streamlit
 streamlit_extras
 tqdm
 pycryptodome==3.15.0
-google-cloud-aiplatform==1.35.0
-vertexai
 torch
 pymongo
 PyPDF2==2.12.0
@@ -12,4 +10,5 @@ InstructorEmbedding
 sentence-transformers
 langchain
 langchain-community
-python-dotenv
+google-cloud-aiplatform==1.70.0
+langchain_mongodb==0.2.0

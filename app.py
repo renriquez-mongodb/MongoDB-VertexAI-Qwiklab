@@ -20,12 +20,14 @@ import certifi
 
 import os
 from dotenv import load_dotenv
+import vertexai
 
 load_dotenv()
 
 os.environ["SENTENCE_TRANSFORMERS_HOME"] = "tmp/st/"
+
 # Update MongoDB URI
-client = MongoClient("mongodb+srv://username:password@host-name", tlsCAFile=certifi.where())
+client = MongoClient(os.environ['MONGODB_URI'], tlsCAFile=certifi.where())
 db = client["vertexaiApp"]
 
 one_way_hash = lambda x: hashlib.md5(x.encode("utf-8")).hexdigest()
@@ -78,7 +80,7 @@ def get_text_chunks(text):
 
 
 def get_embeddings_transformer():
-    embeddings = VertexAIEmbeddings(model_name = "textembedding-gecko@001")
+    embeddings = VertexAIEmbeddings(model_name = "text-embedding-004")
     return embeddings
 
 
@@ -116,6 +118,7 @@ def handle_userinput(user_question):
         with st.chat_message("assistant"):
             st.markdown(message["assistant"])
 
+vertexai.init(project=os.environ['PROJECT_ID'], location=os.environ['LOCATION'])
 
 st.set_page_config(page_title="Chat with multiple PDFs",
                    page_icon=":books:")
@@ -177,4 +180,4 @@ with tab2:
         ''')
         add_vertical_space(5)
         st.write(
-            'Made with ❤️  by [Ashwin Gangadhar](linkedin.com/in/ashwin-gangadhar-00b17046) and [Venkatesh Shanbhag](https://www.linkedin.com/in/venkatesh-shanbhag/) v1')
+            'Made with ❤️  by [Ashwin Gangadhar](linkedin.com/in/ashwin-gangadhar-00b17046) and [Venkatesh Shanbhag](https://www.linkedin.com/in/venkatesh-shanbhag/) v1 and [Ramiro Enriquez](https://linkedin.com/in/renriquezp) v2')
