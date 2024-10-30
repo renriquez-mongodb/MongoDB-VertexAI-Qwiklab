@@ -68,8 +68,32 @@ export LOCATION=gcp-location
 ```
 
 ### Setup Database
-- Connect to 
-- Create a database `vertexaiApp`
+- Navigate to the cluster created
+- Navigate to the `Collections` tab
+- Create database `vertexaiApp` and collection `chat-vec`
+![create database](images/create_database.png)
+- Navigate to the `Atlas Search` tab
+- Click on `Create a Search Index`
+- Select `Atlas Vector Search`
+- Click next
+- Ensure index name is `vector_index`
+- On the `Database and Collection` search for `chat-vec`
+- Select `chat-vec`
+- Use the following definition
+```json
+{
+    "fields": [
+        {
+            "type":"vector",
+            "path":"vec",
+            "numDimensions":768,
+            "similarity": "cosine"
+        }
+    ]
+}
+```
+- Click next
+- Finally, click on Create Search Index
 
 ### Run the application
 ```sh
