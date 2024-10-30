@@ -11,4 +11,5 @@ sentence-transformers
 langchain
 langchain-community
 google-cloud-aiplatform==1.70.0
+langchain-google-vertexai==2.0.6
 langchain_mongodb==0.2.0

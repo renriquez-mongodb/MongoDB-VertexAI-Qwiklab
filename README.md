@@ -8,12 +8,16 @@ This repository equips you to build a Retrieval-Augmented Generation (RAG) model
 - [Start codespace environment](https://codespaces.new/renriquez-mongodb/MongoDB-VertexAI-Qwiklab/tree/add-fixes?quickstart=1)
 
 ### Install the pre-requisites
+Install python3 with pip
 ```sh
 sudo apt update
 sudo apt install python3-pip -y
 python3 -m pip install --upgrade pip
+```
+
+Install the requirements from this app.
+```sh
 pip3 install -r requirements.txt
-pip3 install -qU langchain-google-vertexai
 ```
 
 ### Have a GCP project with VertexAI enabled
@@ -24,10 +28,14 @@ pip3 install -qU langchain-google-vertexai
 
 Follow the steps from [here](https://cloud.google.com/sdk/docs/install)(for Debian/Ubuntu) to install the `gcloud` cli.
 
-Run the following commands to initialize and authenticate the app.
+Run the following commands to initialize the cli.
 
 ```sh
 gcloud init
+```
+
+Run the following to create default credentials for apps.
+```sh
 gcloud auth application-default login 
 ```
 
@@ -46,7 +54,7 @@ Execute this in the mongo-shell to have a skeleton DB and collection.
 ```sh
 use vertexaiApp;
 db.createCollection('chat-vec');
-db.runCommand({"createSearchIndexes":"chat-vec", "indexes":[{"name":"vector_index","type":"vectorSearch", "definition":{"fields":[{"path":"vec", "numDimensions":768, "similarity": "cosine" }]}}]});
+db.runCommand({"createSearchIndexes":"chat-vec", "indexes":[{"name":"vector_index","type":"vectorSearch", "definition":{"fields":[{"type":"vector", "path":"vec", "numDimensions":768, "similarity": "cosine" }]}}]});
 exit();
 ```
 
@@ -65,6 +73,8 @@ mongodb+srv://<username>:<password>@<cluster address>
 ```
 
 ### Export all the environment variable needed for the app to work
+
+Replace the values for each of the variables with the correct values for your setup. Where the MongoDB Atlas cluster is based on the above commands as well as the GCP setup you did previously.
 ```sh
 export MONGODB_URI="mongo-uri"
 export PROJECT_ID=gcp-project-id
