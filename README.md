@@ -10,8 +10,8 @@ This repository equips you to build a Retrieval-Augmented Generation (RAG) model
 ### Install the pre-requisites
 ```sh
 sudo apt update
-sudo apt install python3-pip
-pip3 --version
+sudo apt install python3-pip -y
+python3 -m pip install --upgrade pip
 pip3 install -r requirements.txt
 pip3 install -qU langchain-google-vertexai
 ```
@@ -22,7 +22,7 @@ pip3 install -qU langchain-google-vertexai
 
 ### Install and authenticate `gcloud` cli
 
-Follow the steps from [here](https://cloud.google.com/sdk/docs/install) to install the `gcloud` cli.
+Follow the steps from [here](https://cloud.google.com/sdk/docs/install)(for Debian/Ubuntu) to install the `gcloud` cli.
 
 Run the following commands to initialize and authenticate the app.
 
@@ -33,12 +33,21 @@ gcloud auth application-default login
 
 ### Install and authenticate Atlas cli
 
-Follow the steps from [here](https://www.mongodb.com/docs/atlas/cli/current/install-atlas-cli/).
+Follow the steps from [here](https://www.mongodb.com/docs/atlas/cli/current/install-atlas-cli/)(for Apt & Ubuntu).
 
 Run the following to [setup](https://www.mongodb.com/docs/atlas/cli/current/atlas-cli-getting-started/) and authenticate.
 
 ```sh
-atlas setup
+atlas setup --noBrowser --currentIp --skipSampleData --provider GCP --region CENTRAL_US
+```
+
+When everything is correct, it will connect you to the newly created cluster.
+Execute this in the mongo-shell to have a skeleton DB and collection.
+```sh
+use vertexaiApp;
+db.createCollection('chat-vec');
+db.runCommand({"createSearchIndexes":"chat-vec", "indexes":[{"name":"vector_index","type":"vectorSearch", "definition":{"fields":[{"path":"vec", "numDimensions":768, "similarity": "cosine" }]}}]});
+exit();
 ```
 
 Take note from the following lines from the output:
@@ -54,48 +63,15 @@ Form the connection string to set it in `MONGODB_URI` like the following:
 ```sh
 mongodb+srv://<username>:<password>@<cluster address>
 ```
-Your connection string: mongodb+srv://Cluster05161:RWZde0J2QWtT@cluster05161.ksnda.mongodb.net
-
-### Enable the external IP access to the cluster
-- If you are on a codespace environment run `curl ifconfig.me` in the terminal.
-- [Allow IP in Atlas](https://www.mongodb.com/docs/atlas/security/ip-access-list/)
 
 ### Export all the environment variable needed for the app to work
 ```sh
-export MONGODB_URI="your-mongodb-uri-with-credentials"
-export PROJECT_ID=your-project-id-with-vertexai-apis-enabled
+export MONGODB_URI="mongo-uri"
+export PROJECT_ID=gcp-project-id
 export LOCATION=gcp-location
 ```
 
-### Setup Database
-- Navigate to the cluster created
-- Navigate to the `Collections` tab
-- Create database `vertexaiApp` and collection `chat-vec`
-![create database](images/create_database.png)
-- Navigate to the `Atlas Search` tab
-- Click on `Create a Search Index`
-- Select `Atlas Vector Search`
-- Click next
-- Ensure index name is `vector_index`
-- On the `Database and Collection` search for `chat-vec`
-- Select `chat-vec`
-- Use the following definition
-```json
-{
-    "fields": [
-        {
-            "type":"vector",
-            "path":"vec",
-            "numDimensions":768,
-            "similarity": "cosine"
-        }
-    ]
-}
-```
-- Click next
-- Finally, click on Create Search Index
-
 ### Run the application
 ```sh
-streamlit run app.py
+python3 -m streamlit run app.py
 ```
