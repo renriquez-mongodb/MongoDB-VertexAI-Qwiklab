@@ -46,16 +46,7 @@ Follow the steps from [here](https://www.mongodb.com/docs/atlas/cli/current/inst
 Run the following to [setup](https://www.mongodb.com/docs/atlas/cli/current/atlas-cli-getting-started/) and authenticate.
 
 ```sh
-atlas setup --noBrowser --currentIp --skipSampleData --provider GCP --region CENTRAL_US
-```
-
-When everything is correct, it will connect you to the newly created cluster.
-Execute this in the mongo-shell to have a skeleton DB and collection.
-```sh
-use vertexaiApp;
-db.createCollection('chat-vec');
-db.runCommand({"createSearchIndexes":"chat-vec", "indexes":[{"name":"vector_index","type":"vectorSearch", "definition":{"fields":[{"type":"vector", "path":"vec", "numDimensions":768, "similarity": "cosine" }]}}]});
-exit();
+atlas setup --noBrowser --currentIp --skipSampleData --skipMongosh --provider GCP --region CENTRAL_US
 ```
 
 Take note from the following lines from the output:
@@ -77,8 +68,26 @@ mongodb+srv://<username>:<password>@<cluster address>
 Replace the values for each of the variables with the correct values for your setup. Where the MongoDB Atlas cluster is based on the above commands as well as the GCP setup you did previously.
 ```sh
 export MONGODB_URI="mongo-uri"
-export PROJECT_ID=gcp-project-id
-export LOCATION=gcp-location
+export PROJECT_ID="gcp-project-id"
+export LOCATION="gcp-location"
+export TEXT_MODEL="text-embedding-004"
+export VECTOR_INDEX_NAME="vector_index"
+export CHAT_APP_DB="rag-db"
+export CHAT_APP_COL="chat-vec"
+export CHAT_VERIFY_COL="chat-vec-verify"
+```
+
+When running outside of codespaces, ensure you set this environment variable:
+```sh
+export CLOUDENV_ENVIRONMENT_ID="random-id"
+```
+
+### Setup DB
+Execute this in the terminal to have a skeleton DB and collection with index.
+```sh
+mongosh $MONGODB_URI --eval "use $CHAT_APP_DB" \
+--eval "db.createCollection('$CHAT_APP_COL')" \
+--eval "db.runCommand({'createSearchIndexes':'$CHAT_APP_COL', 'indexes':[{'name':'$VECTOR_INDEX_NAME','type':'vectorSearch', 'definition':{'fields':[{'type':'vector', 'path':'vec', 'numDimensions':768, 'similarity': 'cosine' }]}}]});"
 ```
 
 ### Run the application

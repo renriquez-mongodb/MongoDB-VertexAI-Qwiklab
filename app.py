@@ -28,12 +28,12 @@ os.environ["SENTENCE_TRANSFORMERS_HOME"] = "tmp/st/"
 
 # Update MongoDB URI
 client = MongoClient(os.environ['MONGODB_URI'], tlsCAFile=certifi.where())
-db = client["vertexaiApp"]
+db = client[os.environ['CHAT_APP_DB']]
 
 one_way_hash = lambda x: hashlib.md5(x.encode("utf-8")).hexdigest()
 
-CHAT_VERIFY_COL = "chat-vec-verify"
-CHAT_APP_COL = "chat-vec"
+CHAT_VERIFY_COL = os.environ['CHAT_VERIFY_COL']
+CHAT_APP_COL = os.environ['CHAT_APP_COL']
 
 PROMPT = PromptTemplate(template="""
        Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer. Don't be too descriptive and give point to point answer.
@@ -80,14 +80,14 @@ def get_text_chunks(text):
 
 
 def get_embeddings_transformer():
-    embeddings = VertexAIEmbeddings(model_name = "text-embedding-004")
+    embeddings = VertexAIEmbeddings(model_name = os.environ['TEXT_MODEL'])
     return embeddings
 
 
 @lru_cache(maxsize=1)
 def get_vector_store():
     col = db[CHAT_APP_COL]
-    vs = MongoDBAtlasVectorSearch(collection=col, embedding=get_embeddings_transformer(), index_name="vector_index",
+    vs = MongoDBAtlasVectorSearch(collection=col, embedding=get_embeddings_transformer(), index_name=os.environ['VECTOR_INDEX_NAME'],
                                   embedding_key="vec", text_key="line")
     return vs
 
